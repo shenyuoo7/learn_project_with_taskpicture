@@ -115,7 +115,7 @@ IMAGE_API_TIMEOUT=300
 IMAGE_SIZE=768x768
 ```
 
-不要上传 `.env`。`.gitignore` 已经排除了 `.env`、`.env.*`，但保留 `.env.example` 作为可上传模板。
+
 
 ## 个人画像配置
 
@@ -260,13 +260,4 @@ git push -u origin main
 
 提交前建议先执行 `git status`，确认没有 `.env`、`.venv/`、`logs/`、`outputs/` 或 `data/profile.json`。
 
-## 注意事项
 
-- 不使用 Anaconda。
-- 不使用 Docker。
-- 不使用数据库。
-- 不使用全局 Python。
-- 不上传 `.env`。
-- 不上传个人画像 `data/profile.json`。
-- 不上传运行输出 `outputs/` 和日志 `logs/`。
-- 所有项目代码、配置模板、输出、报告、图解和日志都保存在项目根目录下。
