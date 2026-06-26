@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>计算机项目知识地图生成 Agent</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>计算机项目知识地图生成 Agent</h1>
+      <p>动手之前，先看清项目是什么、模块怎么分、哪些知识先学、哪些暂时别碰。</p>
+    </div>
+    <span id="healthStatus" class="status">检查中</span>
+  </header>
+
+  <main class="layout">
+    <section class="panel">
+      <div class="section-title">
+        <h2>个人基础设置</h2>
+        <button id="saveProfileBtn" type="button">保存个人基础</button>
+      </div>
+
+      <label>我的基础<textarea id="my_background" rows="5"></textarea></label>
+      <label>求职目标<textarea id="job_goal" rows="3"></textarea></label>
+      <label>学习偏好<textarea id="learning_preference" rows="3"></textarea></label>
+      <label>图解偏好<textarea id="diagram_preference" rows="3"></textarea></label>
+      <label>任务偏好<textarea id="task_preference" rows="3"></textarea></label>
+    </section>
+
+    <section class="panel">
+      <div class="section-title">
+        <h2>项目信息输入</h2>
+        <button id="clearBtn" type="button" class="secondary">清空输入</button>
+      </div>
+
+      <label>输出模式
+        <select id="report_mode">
+          <option value="fast">快速认知版：1500～2500 字</option>
+          <option value="standard" selected>知识地图版：4000～7000 字</option>
+          <option value="deep">认知深化版：8000～12000 字</option>
+        </select>
+      </label>
+      <label>项目名称
+        <input id="project_name" type="text" placeholder="例如：3D 第一人称射击游戏 / AI 简历筛选系统 / RV1126 + STM32 手势控制云台">
+      </label>
+      <label>项目描述
+        <textarea id="project_description" rows="8" placeholder="描述项目目标、你想实现的大概效果、已有基础、当前最懵的地方。"></textarea>
+      </label>
+      <div class="grid-two">
+        <label>项目类型
+          <select id="project_type">
+            <option>自动识别 / 不确定</option>
+            <option>嵌入式 / 硬件项目</option>
+            <option>游戏开发项目</option>
+            <option>AI 应用 / Agent 项目</option>
+            <option>Web / 后端 / 小程序项目</option>
+            <option>数据分析 / 推荐系统项目</option>
+            <option>系统底层 / 编译器 / 操作系统项目</option>
+            <option>爬虫 / 数据采集项目</option>
+            <option>其他</option>
+          </select>
+        </label>
+        <label>目标方向
+          <select id="target_direction">
+            <option>暂不确定</option>
+            <option>嵌入式软件开发</option>
+            <option>嵌入式 Linux / AIoT</option>
+            <option>游戏开发</option>
+            <option>后端开发</option>
+            <option>AI 应用开发</option>
+            <option>数据工程 / 推荐系统</option>
+            <option>系统软件 / 编译器</option>
+          </select>
+        </label>
+      </div>
+      <label>已有设备 / 环境 / 技术栈
+        <textarea id="available_equipment" rows="4" placeholder="例如：Unity、Python、STM32、React、MySQL、Linux、没有硬件也可以写“暂无”。"></textarea>
+      </label>
+      <label>当前关注点
+        <textarea id="current_focus" rows="4" placeholder="例如：不知道模块怎么拆、哪些知识点先学、最小切入口从哪开始。"></textarea>
+      </label>
+
+      <button id="generateBtn" type="button" class="primary">生成项目预学习知识地图</button>
+      <p id="message" class="message"></p>
+    </section>
+
+    <section class="panel progress-panel">
+      <div class="section-title">
+        <h2>生成过程</h2>
+        <span id="reportIdBadge" class="status muted">未开始</span>
+      </div>
+      <div class="progress-track">
+        <div id="progressBar" class="progress-bar"></div>
+      </div>
+      <div class="progress-meta">
+        <span id="progressText">等待生成</span>
+        <span id="elapsedText">耗时 0 秒</span>
+      </div>
+      <ol id="stepList" class="step-list">
+        <li class="pending">等待接收项目主题</li>
+        <li class="pending">等待规划报告图片</li>
+        <li class="pending">等待生成报告图片</li>
+        <li class="pending">等待生成知识地图正文</li>
+        <li class="pending">等待导出 Markdown</li>
+        <li class="pending">等待导出 PDF</li>
+      </ol>
+      <div id="failureBox" class="failure-box hidden"></div>
+      <div id="finishedDownloads" class="download-row hidden">
+        <a id="downloadMarkdownLink" class="download-button" href="#" download>下载 Markdown</a>
+        <a id="downloadPdfLink" class="download-button" href="#" download>下载 PDF</a>
+        <a id="openHtmlLink" class="download-button" href="#" target="_blank" rel="noreferrer">打开 HTML 版</a>
+      </div>
+    </section>
+
+    <section class="panel output-panel">
+      <div class="section-title output-title">
+        <div>
+          <h2>项目预学习知识地图</h2>
+          <p>预览模式用于阅读，源码模式用于复制 Markdown。内容重点是认知地图，不是完整教程。</p>
+        </div>
+        <div class="actions">
+          <button id="copyBtn" type="button" class="secondary">复制全文</button>
+          <button id="exportBtn" type="button" class="secondary">导出 .md</button>
+          <button id="exportPdfBtn" type="button" class="secondary">导出 PDF</button>
+        </div>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="输出显示模式">
+        <button id="previewTab" class="tab active" type="button" role="tab" aria-selected="true">预览模式</button>
+        <button id="sourceTab" class="tab" type="button" role="tab" aria-selected="false">源码模式</button>
+      </div>
+
+      <div id="previewPane" class="tab-pane active">
+        <article id="markdownPreview" class="markdown-preview empty-state">生成后的项目预学习知识地图会显示在这里。</article>
+      </div>
+
+      <div id="sourcePane" class="tab-pane">
+        <textarea id="markdownOutput" class="markdown-output" spellcheck="false" placeholder="生成后的完整 Markdown 源码会显示在这里。"></textarea>
+      </div>
+    </section>
+  </main>
+
+  <div id="diagramModal" class="diagram-modal" aria-hidden="true">
+    <div class="diagram-modal-content">
+      <button id="closeDiagramModal" type="button" class="modal-close" aria-label="关闭图解放大视图">关闭</button>
+      <div id="diagramModalBody" class="diagram-modal-body"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2pdf.js/dist/html2pdf.bundle.min.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>
